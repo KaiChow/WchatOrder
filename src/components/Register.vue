@@ -67,20 +67,22 @@ export default {
 
     methods: {
         /**
-         * 流程说明：
+         * 微信预约，流程说明：
          * 1，线上订单
          *    1，获取患者信息，根据openid和zhid
          *    2，有信息，直接调用然后调取支付接口
          *    3，无信息，直接使用患者填写的信息然后在调取支付接口
-         *    4，支付成功后，在调取挂号接口
+         *    4，支付成功后，再调取挂号接口
          * 2，线下订单---直接调取挂号接口
          */
+
+        
         /**
          * 获取或者信息，根据openid和zhid
          */
         getUserInfo() {
             let _this = this;
-            _this.axios
+            _this.$http
                 .get("/api/Register/HZXX", {
                     params: {
                         openid: "dnwqudiwjnixdcewdwe",
@@ -119,12 +121,14 @@ export default {
                 Toast("手机号码不能为空!");
                 return;
             } else {
-                if (!this.isPoneAvailable(this.cellPhone)) {
+                if (!this.isPhoneAvailable(this.cellPhone)) {
                     Toast("手机号码格式不正确!");
                     return;
                 }
             }
+
             /**
+             * 参数列表：
              *  OrgId  ZHID  GHBH_  HZBH  KSBH YSBH  ZJE  YSJE   SSJE  ZLJE   GHSJ   GHY  ZT  GHLBBH 
              *  GHLBMC  MZBH HZXM YEARS MONTHS DAYS HZNL HZNLDW HZXB
              * HZDH XXDZ IsToll  Remark Temperature CashPayAmount  BankCardPayAmount
@@ -148,9 +152,9 @@ export default {
                 YSJE: 21,
                 SSJE: 21,
                 ZLJE: 0,
-                GHSJ:"",
+                GHSJ: "",
                 GHY: "Kevin",
-                ZT:1,
+                ZT: 1,
                 GHYBH: 2018091300000002,
                 GHLBBH: "2018092500000001",
                 SFZH: "",
@@ -174,10 +178,10 @@ export default {
                 HZDH: "",
                 XXDZ: "",
                 Weight: "45",
-                ZHID: 2018091300000002 
+                ZHID: 2018091300000002
             }
 
-            this.axios.post('/api/Register/HZRegister', Obj)
+            this.$http.post('/api/Register/HZRegister', Obj)
                 .then((res) => {
                     Dialog.alert({
                         title: "微信预约",
@@ -199,14 +203,13 @@ export default {
             let Year = e.getFullYear();
             let Months = e.getMonth() + 1;
             let Days = e.getDate();
-            this.birthday = Year + "-" + Months + "-" + Days;
-            console.log(this.birthday);
+            this.birthday = `${Year}-${Months}-${Days}`;
             this.show = false;
         },
         cancelTime() {
             this.show = false;
         },
-        isPoneAvailable(number) {
+        isPhoneAvailable(number) {
             var myreg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
             if (!myreg.test(number)) {
                 return false;

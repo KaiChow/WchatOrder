@@ -33,7 +33,7 @@
     methods: {
       getDoctor() {
         var _this = this;
-        _this.axios.get('/api/Register/KSYS', {
+        _this.$http.get('/api/Register/KSYS', {
           params: {
             KSBH: this.$route.query.ksbh,
             ZHID: 2018091300000002
@@ -53,9 +53,6 @@
           : this.$router.push('/')
       }
     },
-    // mounted: function () {
-    //   this.getDoctor();
-    // },
     created() {
       this.getDoctor();
     }

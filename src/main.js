@@ -8,8 +8,14 @@ import "vant/lib/vant-css/index.css";
 import axios from "../node_modules/axios";
 import "./common/styles/icon.styl";
 
+/**
+ * 注意------！！！！！！！！---------------
+ * 在发到线上之时，axios 的跨域设置要注释，在config文件-->index.js里的proxyTable内部的代码要注释；
+ * axios.defaults.baseURL：要设置为线上端口地址
+ */
+
 Vue.config.productionTip = false;
-Vue.prototype.axios = axios;
+Vue.prototype.$http = axios;
 // axios.defaults.baseURL = "http://172.18.10.189:6666";
 axios.defaults.headers.post["Content-Type"] =
   "application/x-www-form-urlencoded";
