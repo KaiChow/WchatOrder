@@ -10,11 +10,10 @@ import "./common/styles/icon.styl";
 
 Vue.config.productionTip = false;
 Vue.prototype.axios = axios;
-Vue.prototype.HOME = "/api";
-axios.defaults.baseURL = "http://172.18.10.189:6666";
+// axios.defaults.baseURL = "http://172.18.10.189:6666";
 axios.defaults.headers.post["Content-Type"] =
   "application/x-www-form-urlencoded";
-// axios.defaults.headers('Access-Control-Allow-Origin');
+
 /* eslint-disable no-new */
 Vue.use(Vant);
 new Vue({

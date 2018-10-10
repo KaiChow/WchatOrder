@@ -36,7 +36,7 @@
         _this.axios.get('/api/Register/KSYS', {
           params: {
             KSBH: this.$route.query.ksbh,
-            ZHID: 2018071800000019
+            ZHID: 2018091300000002
           }
         }).then(function (res) {
           if (res.data.Ret == 0 && res.data.Data.length > 0) {

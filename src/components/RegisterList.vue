@@ -48,7 +48,7 @@ export default {
           params: {
             KSBH: this.$route.query.ksbh,
             YSBH: this.$route.query.id,
-            ZHID: 2018071800000019
+            ZHID: 2018091300000002
           }
         })
         .then(function(res) {
@@ -71,6 +71,7 @@ export default {
           }
         });
     },
+  
     goBack() {
       window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
     }

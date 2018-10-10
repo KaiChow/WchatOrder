@@ -51,8 +51,9 @@
         var _this = this;
         _this.axios.get('/api/Register/ZHKS', {
           params: {
-            ZHID: 2018071800000019
-          }
+            ZHID: 2018091300000002
+          },
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
         }).then(function (res) {
           if (res.data.Ret == 0 && res.data.Data.length > 0) {
             _this.miss = false;
@@ -89,7 +90,7 @@
         }
       }
     },
-    mounted: function () {
+    created: function () {
       this.getDepartment();
     }
 
