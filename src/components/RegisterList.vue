@@ -4,7 +4,7 @@
     <Header :message="text" :showLeft="show"></Header>
     <div class="register-item" v-for="item in registerList" v-if="!miss" :key="item.ID">
         <van-cell-group v-if="item.AM">
-            <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.AMTIME" :to="{path:'/register'}">
+            <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.AMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID}}">
                 <template>
                     <span class="van-cell-text">费用：￥{{item.Amount}}</span><br>
                     <span class="van-cell-text">剩余号数：{{item.AMMOUNT}}</span>
@@ -12,7 +12,7 @@
             </van-cell>
         </van-cell-group>
         <van-cell-group v-if="item.PM">
-            <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.PMTIME" :to="{path:'/register'}">
+            <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.PMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID}}">
                 <template>
                     <span class="van-cell-text">费用：￥{{item.Amount}}</span><br>
                     <span class="van-cell-text">剩余号数：{{item.PMMOUNT}}</span>
@@ -37,7 +37,10 @@ export default {
     },
     data() {
         return {
+            zhid: this.$route.query.zhid,
             text: "挂号列表",
+            ksbh: this.$route.query.ksbh,
+            ysbh: this.$route.query.id,
             show: "true",
             miss: false,
             registerList: []
@@ -49,9 +52,9 @@ export default {
             _this.$http
                 .get("/api/Register/PBRQ", {
                     params: {
-                        KSBH: this.$route.query.ksbh,
-                        YSBH: this.$route.query.id,
-                        ZHID: 2018091300000002
+                        KSBH: _this.ksbh,
+                        YSBH: _this.ysbh,
+                        ZHID: _this.zhid,
                     }
                 })
                 .then(function (res) {
@@ -73,10 +76,6 @@ export default {
                         _this.miss = true;
                     }
                 });
-        },
-
-        goBack() {
-            window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
         }
     },
     created: function () {
@@ -86,6 +85,9 @@ export default {
 </script>
 
 <style scoped>
+.register-item{
+    padding: 0 10px;
+}
 .register-list-item {
     display: block;
     height: 100%;
