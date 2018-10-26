@@ -1,5 +1,5 @@
 .department-list, .doctor-list {
-  padding: 0 10px;
+  padding: 0 10px 50px;
 }
 
 .list-item {
@@ -7,8 +7,24 @@
   display: block;
   line-height: 1.32667rem;
   height: 1.32667rem;
-  font-size:16px;
+  font-size: 16px;
   border-bottom: 1px solid #ddd;
+}
+
+.register-content {
+  padding-bottom: 50px;
+}
+
+.wrapper-prescription-detail .van-collapse-item__content {
+  color: rgb(242, 130, 106) !important;
+}
+
+.van-collapse-item__content {
+  padding: 0 15px !important;
+}
+
+.wrapper-record-detail .van-cell__value {
+  color: rgb(242, 130, 106) !important;
 }
 
 .list-icon {
@@ -17,18 +33,35 @@
   margin-left: 15px;
   font-size: 20px;
 }
-.van-nav-bar{
+
+.van-nav-bar {
   background-color: #1878c4 !important;
 }
-.van-nav-bar__title{
+
+.van-tabbar-item--active, .van-tabbar-item--active a {
+  color: #1878c4 !important;
+}
+
+.van-tabbar-item__text a, .van-tabbar-item__text a:hover {
+  text-decoration: none;
+}
+
+.van-tabbar-item__text a:hover {
+  color: #1878c4;
+}
+
+.van-nav-bar__title {
   color: #ffffff;
 }
-.van-nav-bar__text{
+
+.van-nav-bar__text {
   color: #ffffff !important;
 }
-.van-nav-bar .van-icon{
+
+.van-nav-bar .van-icon {
   color: #ffffff !important;
 }
+
 .van-radio .van-icon-checked {
   color: #1878c4 !important;
 }

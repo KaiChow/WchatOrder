@@ -2,26 +2,32 @@
 <template>
 <div class="register-container">
     <Header :message="text" :showLeft="show"></Header>
-    <div class="register-item" v-for="item in registerList" v-if="!miss" :key="item.ID">
-        <van-cell-group v-if="item.AM">
-            <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.AMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID}}">
-                <template>
-                    <span class="van-cell-text">费用：￥{{item.Amount}}</span><br>
-                    <span class="van-cell-text">剩余号数：{{item.AMMOUNT}}</span>
-                </template>
-            </van-cell>
-        </van-cell-group>
-        <van-cell-group v-if="item.PM">
-            <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.PMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID}}">
-                <template>
-                    <span class="van-cell-text">费用：￥{{item.Amount}}</span><br>
-                    <span class="van-cell-text">剩余号数：{{item.PMMOUNT}}</span>
-                </template>
-            </van-cell>
-        </van-cell-group>
-    </div>
-    <div v-if="miss">
-        <Miss></Miss>
+    <div class="register-content">
+        <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+            <div class="register-item" v-for="item in registerList" v-if="!miss" :key="item.ID">
+
+                <van-cell-group v-if="item.AM">
+                    <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.AMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID}}">
+                        <template>
+                            <span class="van-cell-text">费用：￥{{item.Amount}}</span><br>
+                            <span class="van-cell-text">剩余号数：{{item.AMMOUNT}}</span>
+                        </template>
+                    </van-cell>
+                </van-cell-group>
+                <van-cell-group v-if="item.PM">
+                    <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.PMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID}}">
+                        <template>
+                            <span class="van-cell-text">费用：￥{{item.Amount}}</span><br>
+                            <span class="van-cell-text">剩余号数：{{item.PMMOUNT}}</span>
+                        </template>
+                    </van-cell>
+                </van-cell-group>
+
+            </div>
+        </van-pull-refresh>
+        <div v-if="miss">
+            <Miss></Miss>
+        </div>
     </div>
 </div>
 </template>
@@ -29,6 +35,9 @@
 <script>
 import Header from "../components/Header";
 import Miss from "../components/Miss";
+import {
+    PullRefresh
+} from 'vant';
 export default {
     name: "RegisterList",
     components: {
@@ -37,6 +46,7 @@ export default {
     },
     data() {
         return {
+            isLoading: false,
             zhid: this.$route.query.zhid,
             text: "挂号列表",
             ksbh: this.$route.query.ksbh,
@@ -47,6 +57,13 @@ export default {
         };
     },
     methods: {
+        /* 下拉刷新的方法 */
+        onRefresh() {
+            setTimeout(() => {
+                this.$toast('刷新成功');
+                this.isLoading = false;
+            }, 500);
+        },
         getRegisterList() {
             var _this = this;
             _this.$http
@@ -85,9 +102,10 @@ export default {
 </script>
 
 <style scoped>
-.register-item{
+.register-item {
     padding: 0 10px;
 }
+
 .register-list-item {
     display: block;
     height: 100%;

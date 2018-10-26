@@ -7,6 +7,7 @@ import Vant from "vant";
 import "vant/lib/vant-css/index.css";
 import axios from "../node_modules/axios";
 import "./common/styles/icon.styl";
+import store from './store.js';
 
 /**
  * 注意------！！！！！！！！---------------
@@ -17,7 +18,7 @@ import "./common/styles/icon.styl";
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios;
 // axios.defaults.baseURL = "http://172.18.10.189:6666";
-axios.defaults.baseURL = "http://120.26.165.247:8086";
+// axios.defaults.baseURL = "http://120.26.165.247:8086";
 axios.defaults.headers.post["Content-Type"] =
   "application/x-www-form-urlencoded";
 
@@ -27,6 +28,7 @@ new Vue({
   el: "#app",
   router,
   axios,
+  store,
   components: { App },
   template: "<App/>"
 });

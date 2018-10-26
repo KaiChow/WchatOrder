@@ -5,10 +5,14 @@
     <form action="/">
         <van-search v-model="search" placeholder="请输入搜索关键词" show-action v-on:input="onSearch" />
     </form>
+    <p>{{$store.state.count}}</p>
     <div class="department-list" v-if="!miss">
-        <van-cell-group>
-            <van-cell v-for="item in departments" v-bind:title="item.KSMC" is-link :to="{path:'/doctors',query:{'ksbh':item.KSBH,'zhid':zhid}}" :key="item.KSBH" />
-        </van-cell-group>
+        <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+            <van-cell-group>
+                <van-cell v-for="item in departments" v-bind:title="item.KSMC" is-link :to="{path:'/doctors',query:{'ksbh':item.KSBH,'zhid':zhid}}" :key="item.KSBH" />
+            </van-cell-group>
+        </van-pull-refresh>
+
     </div>
     <div v-if="miss">
         <Miss></Miss>
@@ -20,11 +24,16 @@
 import Header from "../components/Header";
 import Miss from "../components/Miss";
 import {
-    Toast
+    Toast,
+    PullRefresh
 } from "vant";
 import {
     Dialog
 } from "vant";
+
+import {
+    mapActions
+} from 'vuex'
 export default {
     name: "Departments",
     components: {
@@ -33,6 +42,7 @@ export default {
     },
     data() {
         return {
+            isLoading: false,
             openid: "", //这是测试openid  opvIa1O0eMLUSk3Xe5gRb9TNpGBM
             code: "",
             zhid: "",
@@ -47,6 +57,16 @@ export default {
         };
     },
     methods: {
+        ...mapActions([
+            'updateState'
+        ]),
+        /* 下拉刷新的方法 */
+        onRefresh() {
+            setTimeout(() => {
+                this.$toast('刷新成功');
+                this.isLoading = false;
+            }, 500);
+        },
         /**
          * 获取科室名称列表
          */
@@ -127,6 +147,7 @@ export default {
                             let openid = request.openid;
                             let access_token = request.access_token;
                             localStorage.setItem("openid", openid);
+                            _this.$store.commit('updateState');
                         }
                     }
                 });
@@ -177,43 +198,51 @@ export default {
         }
     },
     created: function () {
-        /* 
-        测试代码：openid为测试的openid
-         */
-        // let openid = localStorage.getItem("openid") || this.openid;
-        // localStorage.setItem('openid', openid);
-        // if (this.openid) {
-        //     this.zhid = "2018091300000002";
-        // } else {
-        //    //
-        // }
 
-        let urlStr = window.location.search;
-        let zhid = "";
-        if (urlStr.indexOf("&") > -1) {
-            zhid = urlStr
-                .split("?")[1]
-                .split("&")[0]
-                .split("=")[1];
+        /* 这是本地测试代码 */
+        let LOCAL_TEST = true; //本地测试
+        if (LOCAL_TEST) {
+            let zhid = "2018091300000002";
+            localStorage.setItem('zhid', zhid);
+            this.zhid = zhid;
+            this.$store.state.zhid = this.zhid;
+            let openid = "opvIa1O0eMLUSk3Xe5gRb9TNpGBM";
+            this.openid = openid;
+            localStorage.setItem('openid', openid);
+            this.$store.state.openid = this.openid;
+            this.$store.commit('updateState');
+            this.getDepartment();
         } else {
-            zhid = urlStr.split("?")[1].split("=")[1];
-        }
-        this.zhid = zhid;
-        let openid = localStorage.getItem("openid") || this.openid;
-        if (!openid) {
+            let urlStr = window.location.search;
+            let zhid = "";
             if (urlStr.indexOf("&") > -1) {
-                let firstFlag = urlStr.split("?")[1].split("&")[2];
-                if (localStorage.getItem("IsGetUrl") == 1 || firstFlag) {
-                    this.initSearch();
+                zhid = urlStr
+                    .split("?")[1]
+                    .split("&")[0]
+                    .split("=")[1];
+            } else {
+                zhid = urlStr.split("?")[1].split("=")[1];
+            }
+            this.zhid = zhid;
+            localStorage.setItem('zhid', zhid);
+            let openid = localStorage.getItem("openid") || this.openid;
+            this.$store.commit('updateState');
+            if (!openid) {
+                if (urlStr.indexOf("&") > -1) {
+                    let firstFlag = urlStr.split("?")[1].split("&")[2];
+                    if (localStorage.getItem("IsGetUrl") == 1 || firstFlag) {
+                        this.initSearch();
+                    } else {
+                        this.getWchatUrl();
+                    }
                 } else {
                     this.getWchatUrl();
                 }
             } else {
-                this.getWchatUrl();
+                this.getDepartment();
             }
-        } else {
-            this.getDepartment();
         }
+
     }
 };
 </script>
