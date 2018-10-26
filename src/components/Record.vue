@@ -1,6 +1,9 @@
 <template>
 <div class="wrapper-record">
     <Header :message="text" :showLeft="show"></Header>
+    <van-notice-bar :scrollable="false" mode="closeable">
+        点击列表，可查看个人电子病历详情。
+    </van-notice-bar>
     <div class="record-content" v-if="!miss">
         <div class="register-item" v-for="item in recordList" v-if="!miss" :key="item.NUM">
             <van-cell-group>
@@ -84,6 +87,8 @@ export default {
                 } else {
                     this.miss = true;
                 }
+            },err=>{
+                 this.miss = true;
             });
         },
         /* 获取下一页的方法 */

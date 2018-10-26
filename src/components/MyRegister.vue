@@ -1,6 +1,7 @@
 <template>
 <div class="wrapper-my-register">
     <Header :message="text" :showLeft="show"></Header>
+   
     <div class="my-register-content">
         <div class="register-item" v-for="item in myRecordList" v-if="!miss" :key="item.NUM">
             <van-cell-group>
@@ -71,9 +72,9 @@ export default {
                             if (value.PBFLAG == "AM") {
                                 value.PBFLAG = "上午";
                                 value.rangeTime = `${value.AMStartTime?value.AMStartTime:""}-${value.AMEndTime?value.AMEndTime:""}`;
-                            }else {
+                            } else {
                                 value.PBFLAG = "下午";
-                                value.rangeTime = `${value.PMStartTime?value.PMStartTime:""}-${value.PMEndTime?value.PMEndTime:""}`; 
+                                value.rangeTime = `${value.PMStartTime?value.PMStartTime:""}-${value.PMEndTime?value.PMEndTime:""}`;
                             }
                         })
                     } else {
@@ -82,6 +83,8 @@ export default {
                 } else {
                     this.miss = true;
                 }
+            },err=>{
+                this.miss = true;
             });
         }
     },

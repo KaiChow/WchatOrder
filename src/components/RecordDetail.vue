@@ -2,16 +2,16 @@
 <div class="wrapper-record-detail">
     <Header :message="text" :showLeft="show"></Header>
     <div class="record-detail-content">
-        <van-notice-bar mode="closeable">
-            病历里没填写的信息，默认不显示。
+        <van-notice-bar mode="closeable" :speed="60">
+            在电子病历里没填写的信息，默认不显示。
         </van-notice-bar>
         <van-collapse v-model="activeNames">
             <van-collapse-item title="个人信息" name="1">
                 <van-cell title="姓名" :value="recordDetail.HZXM" />
-                <van-cell title="性别" value="男" />
-                <van-cell title="年龄" value="34" />
-                <van-cell title="身高" value="178cm" />
-                <van-cell title="体重" value="88kg" />
+                <van-cell title="性别" :value="recordDetail.XB" />
+                <van-cell title="年龄" :value="`${recordDetail.Years}岁`" />
+                <van-cell v-if="recordDetail.SG" title="身高" :value="`${recordDetail.SG}CM`" />
+                <van-cell v-if="recordDetail.TZ" title="体重" :value="`${recordDetail.TZ}KG`" />
             </van-collapse-item>
             <van-collapse-item title="病历信息" name="2">
                 <van-cell v-if="recordDetail.TW" title="体温" :value="`${recordDetail.TW}℃`" />
@@ -126,12 +126,17 @@ export default {
                         this.recordDetail.FBRQ = this.recordDetail.FBRQ == 0 ? "无" : this.recordDetail.FBRQ;
                         this.recordDetail.ZZBZ = this.recordDetail.ZZBZ == 1 ? "非转诊" : "转诊";
 
+                        this.recordDetail.XB = this.recordDetail.XB == 1 ? "女" : "男";
+                        this.recordDetail.Years=(new Date()).getFullYear()-(+this.recordDetail.Years);
+
                     } else {
                         this.miss = true;
                     }
                 } else {
                     this.miss = true;
                 }
+            },err=>{
+                  this.miss = true;
             });
         }
     },

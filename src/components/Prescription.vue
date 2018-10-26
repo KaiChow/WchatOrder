@@ -76,12 +76,13 @@ export default {
                 } else {
                     this.miss = true;
                 }
+            },err=>{
+                 this.miss = true;
             });
         }
     },
     created() {
         this.$store.commit('updateState');
-        console.log(this.$store.state);
         this.getPrescriptionList();
     },
     mounted() {}

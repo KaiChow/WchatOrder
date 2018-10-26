@@ -12,6 +12,8 @@ import MyRegister from '@/components/MyRegister';
 
 Vue.use(Router)
 
+
+
 export default new Router({
   routes: [
     {

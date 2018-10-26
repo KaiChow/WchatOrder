@@ -25,15 +25,13 @@ import Header from "../components/Header";
 import Miss from "../components/Miss";
 import {
     Toast,
+    Dialog,
     PullRefresh
-} from "vant";
-import {
-    Dialog
 } from "vant";
 
 import {
     mapActions
-} from 'vuex'
+} from "vuex";
 export default {
     name: "Departments",
     components: {
@@ -45,8 +43,9 @@ export default {
             isLoading: false,
             openid: "", //这是测试openid  opvIa1O0eMLUSk3Xe5gRb9TNpGBM
             code: "",
+            page: 1,
             zhid: "",
-            IsFirst: true,
+            first: 0,
             text: "科室列表",
             show: "false",
             miss: false,
@@ -56,15 +55,14 @@ export default {
             tempDepartments: []
         };
     },
+
     methods: {
-        ...mapActions([
-            'updateState'
-        ]),
+        ...mapActions(["updateState"]),
         /* 下拉刷新的方法 */
         onRefresh() {
             setTimeout(() => {
-                this.$toast('刷新成功');
-                this.isLoading = false;
+                _this.$toast("刷新成功");
+                _this.isLoading = false;
             }, 500);
         },
         /**
@@ -72,7 +70,7 @@ export default {
          */
 
         getDepartment() {
-            var _this = this;
+            let _this = this;
             _this.$http
                 .get("/api/Register/ZHKS", {
                     params: {
@@ -97,11 +95,12 @@ export default {
          *获取微信code接口
          */
         getWchatUrl() {
-            var _this = this;
+            let _this = this;
             _this.$http
                 .get("/api/WeiXin/getCode", {
                     params: {
-                        obj: _this.zhid
+                        obj: _this.zhid,
+                        page: _this.page
                     },
                     headers: {
                         "X-Requested-With": "XMLHttpRequest"
@@ -109,6 +108,9 @@ export default {
                 })
                 .then(res => {
                     localStorage.setItem("IsGetUrl", 1);
+                    console.log('====================================');
+                    console.log(res.data.Data);
+                    console.log('====================================');
                     window.location.href = res.data.Data;
                 });
         },
@@ -116,7 +118,7 @@ export default {
          *
          */
         getOpenId(code, zhid) {
-            var _this = this;
+            let _this = this;
             _this.$http
                 .get("/api/WeiXin/getOpenId", {
                     params: {
@@ -128,7 +130,9 @@ export default {
                     }
                 })
                 .then(res => {
-                    this.getDepartment();
+                    if (_this.page == 1) {
+                        _this.getDepartment();
+                    }
                     let body = res.data;
                     let request = JSON.parse(body.Data);
                     if (body.Ret == 0) {
@@ -140,14 +144,37 @@ export default {
                                 message: "微信授权失败，重新刷新!"
                             }).then(() => {
                                 window.location.replace(
-                                    `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${this.ZHID}`
+                                    `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${_this.ZHID}&page=${_this.page}`
                                 );
                             });
                         } else {
                             let openid = request.openid;
                             let access_token = request.access_token;
                             localStorage.setItem("openid", openid);
-                            _this.$store.commit('updateState');
+                            _this.$store.commit("updateState");
+                            /* page 1 预约挂号  2，我的预约  3，我的病历  4，我的处方 */
+                            switch (_this.page) {
+                                case 1:
+                                    _this.getDepartment();
+                                    break;
+                                case 2:
+                                    _this.$router.replace({
+                                        path: "/myregister"
+                                    });
+                                    break;
+                                case 3:
+                                    _this.$router.replace({
+                                        path: "/record"
+                                    });
+                                    break;
+                                case 4:
+                                    _this.$router.replace({
+                                        path: "/prescription"
+                                    });
+                                    break;
+
+                            }
+
                         }
                     }
                 });
@@ -157,97 +184,138 @@ export default {
          * 搜索输入框名称改变
          */
         onSearch() {
-            this.searchDepartments = [];
-            this.departments = this.tempDepartments;
-            if (!this.search) {
-                this.departments = this.tempDepartments;
-                this.miss = false;
+            let _this=this;
+            _this.searchDepartments = [];
+            _this.departments = _this.tempDepartments;
+            if (!_this.search) {
+                _this.departments = _this.tempDepartments;
+                _this.miss = false;
                 return;
             }
-            for (let i = 0, j = this.departments.length; i < j; i++) {
-                if (this.departments[i].KSMC.indexOf(this.search) != -1) {
-                    this.searchDepartments.push(this.departments[i]);
+            for (let i = 0, j = _this.departments.length; i < j; i++) {
+                if (_this.departments[i].KSMC.indexOf(_this.search) != -1) {
+                    _this.searchDepartments.push(_this.departments[i]);
                 }
             }
-            this.departments = this.searchDepartments;
-            if (this.departments.length == 0) {
-                this.miss = true;
+            _this.departments = _this.searchDepartments;
+            if (_this.departments.length == 0) {
+                _this.miss = true;
             } else {
-                this.miss = false;
+                _this.miss = false;
             }
         },
         initSearch() {
-            let urlStr = window.location.search;
-            let code = urlStr
-                .split("?")[1]
-                .split("&")[1]
-                .split("=")[1];
-
-            if (code) {
-                let firstFlag = urlStr.split("?")[1].split("&")[2];
-                if (!firstFlag) {
+            let _this = this;
+            if (_this.code) {
+                if (!_this.first) {
+                    _this.first = 1;
                     window.location.replace(
                         `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${
-              this.zhid
-            }&code=${code}&first=1`
+              _this.zhid
+            }&code=${_this.code}&first=${_this.first}&page=${_this.page}`
                     );
                 } else {
-                    this.getOpenId(code, this.zhid);
+                    _this.getOpenId(_this.code, _this.zhid);
                 }
             }
         }
     },
+
     created: function () {
 
+        /* page 1 预约挂号  2，我的预约  3，我的病历  4，我的处方 */
+
+        // _this.$route.replace();
         /* 这是本地测试代码 */
-        let LOCAL_TEST = true; //本地测试
-        if (LOCAL_TEST) {
-            let zhid = "2018091300000002";
-            localStorage.setItem('zhid', zhid);
-            this.zhid = zhid;
-            this.$store.state.zhid = this.zhid;
-            let openid = "opvIa1O0eMLUSk3Xe5gRb9TNpGBM";
-            this.openid = openid;
-            localStorage.setItem('openid', openid);
-            this.$store.state.openid = this.openid;
-            this.$store.commit('updateState');
-            this.getDepartment();
+        let _this = this;
+        let urlStr = window.location.search;
+        if (!urlStr) {
+            _this.$toast('程序配置失败,请联系售后人员处理!');
         } else {
-            let urlStr = window.location.search;
-            let zhid = "";
-            if (urlStr.indexOf("&") > -1) {
-                zhid = urlStr
-                    .split("?")[1]
-                    .split("&")[0]
-                    .split("=")[1];
-            } else {
-                zhid = urlStr.split("?")[1].split("=")[1];
+            let params = urlStr;
+            if (params.indexOf("&") == -1) {
+                return false;
             }
-            this.zhid = zhid;
-            localStorage.setItem('zhid', zhid);
-            let openid = localStorage.getItem("openid") || this.openid;
-            this.$store.commit('updateState');
-            if (!openid) {
-                if (urlStr.indexOf("&") > -1) {
-                    let firstFlag = urlStr.split("?")[1].split("&")[2];
-                    if (localStorage.getItem("IsGetUrl") == 1 || firstFlag) {
-                        this.initSearch();
-                    } else {
-                        this.getWchatUrl();
+            let str = params.split('?')[1];
+            let obj = {};
+            let arr = str.split('&');
+            arr.forEach(value => {
+                if (value.indexOf("%") > -1) {
+                    let a = JSON.parse(decodeURI(value.split("=")[1]));
+                    for (const key in a) {
+                        obj[key] = a[key];
                     }
                 } else {
-                    this.getWchatUrl();
+                    let tempArr = value.split("=");
+                    let key = tempArr[0];
+                    let val = tempArr[1];
+                    obj[key] = val;
                 }
-            } else {
-                this.getDepartment();
+
+            });
+
+            params = obj;
+            /* 
+            params = 
+                ZHID:12313,
+                page:1,
+                first:1
+                code:123131231
             }
+            */
+            if (params) {
+                _this.zhid = params.ZHID;
+                _this.page =parseInt(params.page);
+                _this.code = params.code;
+                _this.first = params.first || 0;
+                localStorage.setItem("zhid", _this.zhid);
+                let openid = localStorage.getItem("openid") || _this.openid;
+                _this.$store.commit("updateState");
+                if (!openid) {
+                    if (localStorage.getItem("IsGetUrl") == 1 || params.first == 1) {
+                        _this.initSearch();
+                    } else {
+                        _this.getWchatUrl();
+                    }
+                } else {
+                    console.log('====================================');
+                    console.log(params);
+                    console.log('====================================');
+
+                    switch (_this.page) {
+                        case 1:
+                            _this.$router.replace({
+                                path: "/"
+                            });
+                            break;
+                        case 2:
+                            _this.$router.replace({
+                                path: "/myregister"
+                            });
+                            break;
+                        case 3:
+                            _this.$router.replace({
+                                path: "/prescription"
+                            });
+                            break;
+                        case 4:
+                            _this.$router.replace({
+                                path: "/record"
+                            });
+                            break;
+                    }
+
+                }
+            }
+
         }
 
     }
+
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add "scoped" attribute to limit CSS to _this component only -->
 
 <style scoped>
 h1,

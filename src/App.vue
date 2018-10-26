@@ -1,20 +1,6 @@
 <template>
 <div id="app">
     <router-view />
-    <van-tabbar v-model="active" class="tabbar-container">
-        <van-tabbar-item icon="sign">
-          <router-link to="/">预约</router-link>
-        </van-tabbar-item>
-        <van-tabbar-item icon="pending-orders">
-            <router-link to="/prescription">处方</router-link>
-        </van-tabbar-item>
-        <van-tabbar-item icon="records">
-            <router-link to="/record">病历</router-link>
-        </van-tabbar-item>
-         <van-tabbar-item icon="contact">
-            <router-link to="/myregister">我的</router-link>
-        </van-tabbar-item>
-    </van-tabbar>
 </div>
 </template>
 
