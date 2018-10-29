@@ -1,6 +1,5 @@
 <template>
 <div class="wrapper-record-detail">
-    <Header :message="text" :showLeft="show"></Header>
     <div class="record-detail-content">
         <van-notice-bar mode="closeable" :speed="60">
             在电子病历里没填写的信息，默认不显示。
@@ -49,7 +48,6 @@
 </template>
 
 <script>
-import Header from "../components/Header";
 import Miss from "../components/Miss";
 import {
     Cell,
@@ -59,7 +57,6 @@ import {
 } from 'vant';
 export default {
     components: {
-        Header,
         Miss
     },
     props: {},
@@ -124,10 +121,12 @@ export default {
                         }
                         this.recordDetail.Infection = this.recordDetail.Infection == 1 ? "是" : "否";
                         this.recordDetail.FBRQ = this.recordDetail.FBRQ == 0 ? "无" : this.recordDetail.FBRQ;
-                        this.recordDetail.ZZBZ = this.recordDetail.ZZBZ == 1 ? "非转诊" : "转诊";
+                        this.recordDetail.ZZBZ = this.recordDetail.ZZBZ == 1 ? "转诊" : "非转诊";
 
                         this.recordDetail.XB = this.recordDetail.XB == 1 ? "女" : "男";
-                        this.recordDetail.Years=(new Date()).getFullYear()-(+this.recordDetail.Years);
+                        if (this.recordDetail.Years > 1000) {
+                            this.recordDetail.Years = (new Date()).getFullYear() - (+this.recordDetail.Years);
+                        }
 
                     } else {
                         this.miss = true;
@@ -135,8 +134,8 @@ export default {
                 } else {
                     this.miss = true;
                 }
-            },err=>{
-                  this.miss = true;
+            }, err => {
+                this.miss = true;
             });
         }
     },

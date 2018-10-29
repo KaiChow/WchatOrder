@@ -1,15 +1,14 @@
 <template>
 <div class="wrapper-record">
-    <Header :message="text" :showLeft="show"></Header>
     <van-notice-bar :scrollable="false" mode="closeable">
         点击列表，可查看个人电子病历详情。
     </van-notice-bar>
     <div class="record-content" v-if="!miss">
         <div class="register-item" v-for="item in recordList" v-if="!miss" :key="item.NUM">
             <van-cell-group>
-                <van-cell v-bind:title="`编号：${item.BLBH}`" value="内容" v-bind:label="`${item.CJSJ}`" :to="{path:'/recorddetail',query:{'zhid':zhid,'blbh':item.BLBH,'hzbh':item.HZBH}}">
+                <van-cell class="record-list" v-bind:title="`编号:${item.BLBH}`" value="内容" v-bind:label="`时间:${item.CJSJ}`" :to="{path:'/recorddetail',query:{'zhid':zhid,'blbh':item.BLBH,'hzbh':item.HZBH}}">
                     <template>
-                        <span class="van-cell-text">医生：{{item.YSXM}}</span><br>
+                        <span class="van-cell-text record-text">医生：{{item.YSXM}}</span><br>
                         <span class="van-cell-text">科室：{{item.KSMC}}</span>
                     </template>
                 </van-cell>
@@ -24,22 +23,18 @@
 </template>
 
 <script>
-import Header from "../components/Header";
 import Miss from "../components/Miss";
 import {
     mapActions
 } from 'vuex'
 export default {
     components: {
-        Miss,
-        Header
+        Miss
     },
     props: {},
     data() {
         return {
             showPager: false,
-            text: "病历列表",
-            show: "false",
             miss: false,
             zhid: "",
             PageIndex: 1,
@@ -61,8 +56,8 @@ export default {
             this.$http.get("/api/Register/MyBLList", {
 
                 params: {
-                    openID: this.$store.state.openid,
-                    ZHID: this.$store.state.zhid,
+                    openID: this.$store.state.openid || localStorage.getItem('openid'),
+                    ZHID: this.$store.state.zhid || localStorage.getItem('zhid'),
                     PageIndex: this.PageIndex,
                     PageSize: this.PageSize
                 },
@@ -87,8 +82,8 @@ export default {
                 } else {
                     this.miss = true;
                 }
-            },err=>{
-                 this.miss = true;
+            }, err => {
+                this.miss = true;
             });
         },
         /* 获取下一页的方法 */
@@ -106,5 +101,8 @@ export default {
 </script>
 
 <style scoped>
-
+.record-list,
+.record-list .record-text {
+    font-size: 14px;
+}
 </style>

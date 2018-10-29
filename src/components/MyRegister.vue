@@ -1,7 +1,5 @@
 <template>
 <div class="wrapper-my-register">
-    <Header :message="text" :showLeft="show"></Header>
-   
     <div class="my-register-content">
         <div class="register-item" v-for="item in myRecordList" v-if="!miss" :key="item.NUM">
             <van-cell-group>
@@ -21,7 +19,7 @@
 </template>
 
 <script>
-import Header from "../components/Header";
+
 import Miss from "../components/Miss";
 import {
     mapActions
@@ -29,16 +27,13 @@ import {
 
 export default {
     components: {
-        Miss,
-        Header
+        Miss
     },
     props: {},
     data() {
         return {
             time: "",
             rangeTime: "",
-            text: "我的预约",
-            show: "false",
             miss: false,
             PageIndex: 1,
             PageSize: 8,

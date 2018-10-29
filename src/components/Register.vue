@@ -1,7 +1,6 @@
 <!--挂号确认页面-->
 <template>
   <div class="register-action">
-    <Header :message="text" :showLeft="showLeft"></Header>
     <div class="register-content">
       <van-cell-group>
         <van-field v-model="departmenName" readonly label="科室名称"/>
@@ -39,7 +38,6 @@
 </template>
 
 <script>
-  import Header from "../components/Header";
   import {
     Toast
   } from "vant";
@@ -52,11 +50,9 @@
 
   export default {
     name: "Register",
-    components: {
-      Header
-    },
     data() {
       return {
+        show:false,
         MRGHY: "",//默认挂号员编号
         MRGHYMC: "",//默认挂号员名称
         GHBH: "",
@@ -65,9 +61,7 @@
         AccessToken: "",
         ChargeType: "", //1,线上 2，线下
         PBID: "",
-        text: "确认挂号",
         openid: localStorage.getItem("openid"),
-        show: false,
         showLeft: "true",
         departmenName: "门诊呼吸内科", //科室名称
         treatTime: "上午",

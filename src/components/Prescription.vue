@@ -1,10 +1,10 @@
 <template>
 <div class="wrapper-prescription">
-    <Header :message="text" :showLeft="show"></Header>
+    <!-- <Header :message="text" :showLeft="show"></Header> -->
     <div class="prescription-content" v-if="!miss">
         <div class="register-item" v-for="item in prescriptList" v-if="!miss" :key="item.NUM">
             <van-cell-group>
-                <van-cell v-bind:title="`姓名：${item.HZXM}`" value="内容" v-bind:label="`${item.CJRQ}`" :to="{path:'/prescriptiondetail',query:{'zhid':zhid,'zz':item.ZZ,'zdxx':item.ZDXX,'ysyz':item.YSYZ}}">
+                <van-cell v-bind:title="`姓名：${item.HZXM}`" value="内容" v-bind:label="`${item.CJRQ}`" :to="{path:'/prescriptiondetail',query:{'zhid':zhid,'mzbh':item.MZBH,'cfbh':item.CFBH,'cflx':item.CFLX,'zz':item.ZZ,'zdxx':item.ZDXX,'ysyz':item.YSYZ}}">
                     <template>
                         <span class="van-cell-text">医生：{{item.YSXM}}</span><br>
                         <span class="van-cell-text">金额：￥{{item.ZJE}}</span>
@@ -22,7 +22,6 @@
 /* 处方列表页面 */
 
 <script>
-import Header from "../components/Header";
 import Miss from "../components/Miss";
 import {
     mapActions
@@ -30,8 +29,7 @@ import {
 
 export default {
     components: {
-        Miss,
-        Header
+        Miss
     },
     props: {},
     data() {
@@ -85,7 +83,9 @@ export default {
         this.$store.commit('updateState');
         this.getPrescriptionList();
     },
-    mounted() {}
+    mounted() {
+       
+    }
 }
 </script>
 

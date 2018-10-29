@@ -1,7 +1,6 @@
 <!--挂号列表页面-->
 <template>
 <div class="register-container">
-    <Header :message="text" :showLeft="show"></Header>
     <div class="register-content">
         <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
             <div class="register-item" v-for="item in registerList" v-if="!miss" :key="item.ID">
@@ -33,7 +32,6 @@
 </template>
 
 <script>
-import Header from "../components/Header";
 import Miss from "../components/Miss";
 import {
     PullRefresh
@@ -41,17 +39,14 @@ import {
 export default {
     name: "RegisterList",
     components: {
-        Header,
         Miss
     },
     data() {
         return {
             isLoading: false,
             zhid: this.$route.query.zhid,
-            text: "挂号列表",
             ksbh: this.$route.query.ksbh,
             ysbh: this.$route.query.id,
-            show: "true",
             miss: false,
             registerList: []
         };

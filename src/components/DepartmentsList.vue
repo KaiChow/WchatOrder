@@ -1,7 +1,6 @@
 <!--科室列表页面-->
 <template>
 <div class="department">
-    <Header :message="text" :showLeft="show"></Header>
     <form action="/">
         <van-search v-model="search" placeholder="请输入搜索关键词" show-action v-on:input="onSearch" />
     </form>
@@ -21,7 +20,6 @@
 </template>
 
 <script>
-import Header from "../components/Header";
 import Miss from "../components/Miss";
 import {
     Toast,
@@ -35,8 +33,7 @@ import {
 export default {
     name: "Departments",
     components: {
-        Miss,
-        Header
+        Miss
     },
     data() {
         return {
@@ -46,8 +43,6 @@ export default {
             page: 1,
             zhid: "",
             first: 0,
-            text: "科室列表",
-            show: "false",
             miss: false,
             search: "",
             departments: [],
@@ -130,9 +125,6 @@ export default {
                     }
                 })
                 .then(res => {
-                    if (_this.page == 1) {
-                        _this.getDepartment();
-                    }
                     let body = res.data;
                     let request = JSON.parse(body.Data);
                     if (body.Ret == 0) {
@@ -153,6 +145,7 @@ export default {
                             localStorage.setItem("openid", openid);
                             _this.$store.commit("updateState");
                             /* page 1 预约挂号  2，我的预约  3，我的病历  4，我的处方 */
+                            _this.page = parseInt(_this.page);
                             switch (_this.page) {
                                 case 1:
                                     _this.getDepartment();
@@ -172,7 +165,6 @@ export default {
                                         path: "/prescription"
                                     });
                                     break;
-
                             }
 
                         }
@@ -184,7 +176,7 @@ export default {
          * 搜索输入框名称改变
          */
         onSearch() {
-            let _this=this;
+            let _this = this;
             _this.searchDepartments = [];
             _this.departments = _this.tempDepartments;
             if (!_this.search) {
@@ -210,9 +202,7 @@ export default {
                 if (!_this.first) {
                     _this.first = 1;
                     window.location.replace(
-                        `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${
-              _this.zhid
-            }&code=${_this.code}&first=${_this.first}&page=${_this.page}`
+                        `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${ _this.zhid}&code=${_this.code}&first=${_this.first}&page=${_this.page}`
                     );
                 } else {
                     _this.getOpenId(_this.code, _this.zhid);
@@ -228,90 +218,115 @@ export default {
         // _this.$route.replace();
         /* 这是本地测试代码 */
         let _this = this;
-        let urlStr = window.location.search;
-        if (!urlStr) {
-            _this.$toast('程序配置失败,请联系售后人员处理!');
+        let IS_TEST =false;
+        if (IS_TEST) {
+            _this.page = 4;
+            _this.zhid = "2018091300000002";
+            localStorage.setItem("zhid",_this.zhid);
+            localStorage.setItem('openid',"opvIa1O0eMLUSk3Xe5gRb9TNpGBM");
+            switch (_this.page) {
+                case 1:
+                    _this.getDepartment();
+                    break;
+                case 2:
+                    _this.$router.replace({
+                        path: "/myregister"
+                    });
+                    break;
+                case 3:
+                    _this.$router.replace({
+                        path: "/record"
+                    });
+                    break;
+                case 4:
+                    _this.$router.replace({
+                        path: "/prescription"
+                    });
+                    break;
+
+            }
         } else {
-            let params = urlStr;
-            if (params.indexOf("&") == -1) {
-                return false;
-            }
-            let str = params.split('?')[1];
-            let obj = {};
-            let arr = str.split('&');
-            arr.forEach(value => {
-                if (value.indexOf("%") > -1) {
-                    let a = JSON.parse(decodeURI(value.split("=")[1]));
-                    for (const key in a) {
-                        obj[key] = a[key];
-                    }
-                } else {
-                    let tempArr = value.split("=");
-                    let key = tempArr[0];
-                    let val = tempArr[1];
-                    obj[key] = val;
+            let urlStr = window.location.search;
+            if (!urlStr) {
+                _this.$toast('程序配置失败,请联系售后人员处理!');
+            } else {
+                let params = urlStr;
+                if (params.indexOf("&") == -1) {
+                    return false;
                 }
-
-            });
-
-            params = obj;
-            /* 
-            params = 
-                ZHID:12313,
-                page:1,
-                first:1
-                code:123131231
-            }
-            */
-            if (params) {
-                _this.zhid = params.ZHID;
-                _this.page =parseInt(params.page);
-                _this.code = params.code;
-                _this.first = params.first || 0;
-                localStorage.setItem("zhid", _this.zhid);
-                let openid = localStorage.getItem("openid") || _this.openid;
-                _this.$store.commit("updateState");
-                if (!openid) {
-                    if (localStorage.getItem("IsGetUrl") == 1 || params.first == 1) {
-                        _this.initSearch();
+                let str = params.split('?')[1];
+                let obj = {};
+                let arr = str.split('&');
+                arr.forEach(value => {
+                    if (value.indexOf("%") > -1) {
+                        let a = JSON.parse(decodeURI(value.split("=")[1]));
+                        for (const key in a) {
+                            obj[key] = a[key];
+                        }
                     } else {
-                        _this.getWchatUrl();
-                    }
-                } else {
-                    console.log('====================================');
-                    console.log(params);
-                    console.log('====================================');
-
-                    switch (_this.page) {
-                        case 1:
-                            _this.$router.replace({
-                                path: "/"
-                            });
-                            break;
-                        case 2:
-                            _this.$router.replace({
-                                path: "/myregister"
-                            });
-                            break;
-                        case 3:
-                            _this.$router.replace({
-                                path: "/prescription"
-                            });
-                            break;
-                        case 4:
-                            _this.$router.replace({
-                                path: "/record"
-                            });
-                            break;
+                        let tempArr = value.split("=");
+                        let key = tempArr[0];
+                        let val = tempArr[1];
+                        obj[key] = val;
                     }
 
+                });
+
+                params = obj;
+                /* 
+                params = 
+                    ZHID:12313,
+                    page:1,
+                    first:1
+                    code:123131231
+                }
+                */
+                if (params) {
+                    _this.zhid = params.ZHID;
+                    _this.page = parseInt(params.page);
+                    _this.code = params.code;
+                    _this.first = params.first || 0;
+                    localStorage.setItem("zhid", _this.zhid);
+                    let openid = localStorage.getItem("openid") || _this.openid;
+                    _this.$store.commit("updateState");
+                    if (!openid) {
+                        if (localStorage.getItem("IsGetUrl") == 1 || params.first == 1) {
+                            _this.initSearch();
+                        } else {
+                            _this.getWchatUrl();
+                        }
+                    } else {
+                        console.log('====================================');
+                        console.log(params);
+                        console.log('====================================');
+
+                        switch (_this.page) {
+                            case 1:
+                                _this.getDepartment();
+                                break;
+                            case 2:
+                                _this.$router.replace({
+                                    path: "/myregister"
+                                });
+                                break;
+                            case 3:
+                                _this.$router.replace({
+                                    path: "/record"
+                                });
+                                break;
+                            case 4:
+                                _this.$router.replace({
+                                    path: "/prescription"
+                                });
+                                break;
+
+                        }
+                    }
                 }
             }
 
         }
-
     }
-
 };
 </script>
 

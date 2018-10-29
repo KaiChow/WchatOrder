@@ -1,8 +1,6 @@
 <!--医生列表页面-->
 <template>
 <div class="doctor-container">
-    <Header :message="text" :showLeft="show"></Header>
-
     <div class="doctor-list" v-if="!miss">
         <van-cell-group>
             <van-cell v-for="(item) in doctors" :key="item.YSXM" v-bind:title="item.YSXM" is-link arrow-direction="right" v-bind:value="item.YSLevelMC" :to="{path:'registerlist',query:{id:item.YSBH,ksbh:item.KSBH,zhid:zhid}}" />
@@ -16,19 +14,16 @@
 
 <script>
 import Miss from '../components/Miss'
-import Header from '../components/Header';
+
 export default {
     name: "DoctorList",
     components: {
-        Miss,
-        Header
+        Miss
     },
     data() {
         return {
             zhid:this.$route.query.zhid,
             miss: false,
-            text: "医生列表",
-            show: "true",
             doctors: []
         }
     },

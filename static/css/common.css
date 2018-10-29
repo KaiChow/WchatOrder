@@ -19,6 +19,10 @@
   color: rgb(242, 130, 106) !important;
 }
 
+.wrapper-record .van-cell__value{
+  flex: none;
+}
+
 .van-collapse-item__content {
   padding: 0 15px !important;
 }
