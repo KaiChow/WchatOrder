@@ -9,10 +9,10 @@ import RecordDetail from '@/components/RecordDetail'
 import Prescription from '@/components/Prescription'
 import PrescriptionDetail from '@/components/PrescriptionDetail'
 import MyRegister from '@/components/MyRegister';
+import TraditionlDoctor from '@/components/TraditionlDoctor';
+import TraditionalRegisters from '@/components/TraditionalRegisters'
 
 Vue.use(Router)
-
-
 
 export default new Router({
   routes: [
@@ -55,11 +55,21 @@ export default new Router({
       path: '/recorddetail',
       name: 'RecordDetail',//病历详情
       component: RecordDetail
-    } ,
+    },
     {
       path: '/myregister',
       name: 'MyRegister',//病历详情
       component: MyRegister
+    },
+    {
+      path: '/traditionldoctor',
+      name: 'TraditionlDoctor',//中医医生
+      component: TraditionlDoctor
+    },
+    {
+      path: '/traditionalregisters',
+      name: 'TraditionalRegisters',//中医预约
+      component: TraditionalRegisters
     }
   ]
 })

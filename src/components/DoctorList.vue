@@ -3,7 +3,7 @@
 <div class="doctor-container">
     <div class="doctor-list" v-if="!miss">
         <van-cell-group>
-            <van-cell v-for="(item) in doctors" :key="item.YSXM" v-bind:title="item.YSXM" is-link arrow-direction="right" v-bind:value="item.YSLevelMC" :to="{path:'registerlist',query:{id:item.YSBH,ksbh:item.KSBH,zhid:zhid}}" />
+            <van-cell v-for="(item) in doctors" :key="item.YSXM" v-bind:title="item.YSXM" is-link arrow-direction="right" v-bind:value="item.YSLevelMC" :to="{path:'/registerlist',query:{id:item.YSBH,ksbh:item.KSBH,zhid:zhid}}" />
         </van-cell-group>
     </div>
     <div v-if="miss">
@@ -22,7 +22,7 @@ export default {
     },
     data() {
         return {
-            zhid:this.$route.query.zhid,
+            zhid: this.$route.query.zhid,
             miss: false,
             doctors: []
         }

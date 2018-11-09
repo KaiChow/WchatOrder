@@ -7,7 +7,7 @@
                     <van-cell :title="`${index+1}、${list.YPMC}`" :value="`规格：${list.GG}`" />
                     <van-cell class="prescript-content" :value="`单次用量：${list.MCYL}${list.JXDWBH}，频度：1天${list.YYZCS/list.YYTS}次，总共${list.YYTS}天，用法：${list.YFMC}`" />
                 </div>
-                <div v-for="(list,index) in preDetailList" :key="list.item" v-if="CFLX==3">
+                <div v-for="(list,index) in preDetailList" :key="list.item" v-else>
                     <van-cell :title="`${index+1}、${list.ZLXMMC}`" :value="`${list.FPXMMC}`" />
                     <van-cell class="prescript-content" :value="`部位：${list.BW}，数量：${list.SL}次，备注：${list.BZ}`" />
                 </div>
@@ -19,7 +19,7 @@
             <van-collapse-item title="诊断信息" name="3">
                 {{zdxx}}
             </van-collapse-item>
-            <van-collapse-item title="医生医嘱" name="4" disabled>
+            <van-collapse-item title="医生医嘱" name="4">
                 {{ysyz}}
             </van-collapse-item>
         </van-collapse>
@@ -138,7 +138,7 @@ export default {
 
 <style scoped>
 .prescript-content {
-    color:rgb(242, 130, 106) !important;
+    color: rgb(242, 130, 106) !important;
     font-size: 13px;
 }
 </style>

@@ -103,9 +103,9 @@ export default {
                 })
                 .then(res => {
                     localStorage.setItem("IsGetUrl", 1);
-                    console.log('====================================');
+                    console.log("====================================");
                     console.log(res.data.Data);
-                    console.log('====================================');
+                    console.log("====================================");
                     window.location.href = res.data.Data;
                 });
         },
@@ -136,7 +136,9 @@ export default {
                                 message: "微信授权失败，重新刷新!"
                             }).then(() => {
                                 window.location.replace(
-                                    `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${_this.ZHID}&page=${_this.page}`
+                                    `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${
+                    _this.ZHID
+                  }&page=${_this.page}`
                                 );
                             });
                         } else {
@@ -165,8 +167,17 @@ export default {
                                         path: "/prescription"
                                     });
                                     break;
+                                case 5:
+                                    _this.$router.replace({
+                                       path:"/traditionldoctor"
+                                    });
+                                    break;
+                                case 6:
+                                    _this.$router.replace({
+                                        path: "/traditionalregisters"
+                                    });
+                                    break;
                             }
-
                         }
                     }
                 });
@@ -202,7 +213,9 @@ export default {
                 if (!_this.first) {
                     _this.first = 1;
                     window.location.replace(
-                        `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${ _this.zhid}&code=${_this.code}&first=${_this.first}&page=${_this.page}`
+                        `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${_this.zhid}&code=${
+              _this.code
+            }&first=${_this.first}&page=${_this.page}`
                     );
                 } else {
                     _this.getOpenId(_this.code, _this.zhid);
@@ -212,18 +225,18 @@ export default {
     },
 
     created: function () {
-
         /* page 1 预约挂号  2，我的预约  3，我的病历  4，我的处方 */
 
         // _this.$route.replace();
         /* 这是本地测试代码 */
         let _this = this;
-        let IS_TEST =false;
+        let IS_TEST = true;
         if (IS_TEST) {
-            _this.page = 4;
-            _this.zhid = "2018091300000002";
-            localStorage.setItem("zhid",_this.zhid);
-            localStorage.setItem('openid',"opvIa1O0eMLUSk3Xe5gRb9TNpGBM");
+            _this.page = 5;
+            // _this.zhid = "2017090100000007" || "2018091300000002";
+            _this.zhid = "2018091300000002" || "2018091300000002";
+            localStorage.setItem("zhid", _this.zhid);
+            localStorage.setItem("openid", "opvIa1O0eMLUSk3Xe5gRb9TNpGBM");
             switch (_this.page) {
                 case 1:
                     _this.getDepartment();
@@ -243,20 +256,29 @@ export default {
                         path: "/prescription"
                     });
                     break;
-
+                case 5:
+                    _this.$router.replace({
+                     path:"/traditionldoctor"
+                    });
+                    break;
+                case 6:
+                    _this.$router.replace({
+                        path: "/traditionalregisters"
+                    });
+                    break;
             }
         } else {
             let urlStr = window.location.search;
             if (!urlStr) {
-                _this.$toast('程序配置失败,请联系售后人员处理!');
+                _this.$toast("程序配置失败,请联系售后人员处理!");
             } else {
                 let params = urlStr;
                 if (params.indexOf("&") == -1) {
                     return false;
                 }
-                let str = params.split('?')[1];
+                let str = params.split("?")[1];
                 let obj = {};
-                let arr = str.split('&');
+                let arr = str.split("&");
                 arr.forEach(value => {
                     if (value.indexOf("%") > -1) {
                         let a = JSON.parse(decodeURI(value.split("=")[1]));
@@ -269,18 +291,9 @@ export default {
                         let val = tempArr[1];
                         obj[key] = val;
                     }
-
                 });
 
                 params = obj;
-                /* 
-                params = 
-                    ZHID:12313,
-                    page:1,
-                    first:1
-                    code:123131231
-                }
-                */
                 if (params) {
                     _this.zhid = params.ZHID;
                     _this.page = parseInt(params.page);
@@ -296,9 +309,9 @@ export default {
                             _this.getWchatUrl();
                         }
                     } else {
-                        console.log('====================================');
+                        console.log("====================================");
                         console.log(params);
-                        console.log('====================================');
+                        console.log("====================================");
 
                         switch (_this.page) {
                             case 1:
@@ -319,12 +332,20 @@ export default {
                                     path: "/prescription"
                                 });
                                 break;
-
+                            case 5:
+                                _this.$router.replace({
+                                    path:"/traditionldoctor"
+                                });
+                                break;
+                            case 6:
+                                _this.$router.replace({
+                                    path: "/traditionalregisters"
+                                });
+                                break;
                         }
                     }
                 }
             }
-
         }
     }
 };
