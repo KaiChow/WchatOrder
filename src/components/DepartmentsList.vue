@@ -42,6 +42,7 @@ export default {
             code: "",
             page: 1,
             zhid: "",
+            version: 2,
             first: 0,
             miss: false,
             search: "",
@@ -169,7 +170,7 @@ export default {
                                     break;
                                 case 5:
                                     _this.$router.replace({
-                                       path:"/traditionldoctor"
+                                        path: "/traditionldoctor"
                                     });
                                     break;
                                 case 6:
@@ -225,12 +226,19 @@ export default {
     },
 
     created: function () {
+        /* 判断版本 */
+        let version = localStorage.getItem('version') || 1;
+        if (this.version != version) {
+            localStorage.clear();
+            localStorage.setItem('version', this.version);
+            window.location.reload(true);
+        }
         /* page 1 预约挂号  2，我的预约  3，我的病历  4，我的处方 */
 
         // _this.$route.replace();
         /* 这是本地测试代码 */
         let _this = this;
-        let IS_TEST = true;
+        let IS_TEST = false;
         if (IS_TEST) {
             _this.page = 5;
             // _this.zhid = "2017090100000007" || "2018091300000002";
@@ -258,7 +266,7 @@ export default {
                     break;
                 case 5:
                     _this.$router.replace({
-                     path:"/traditionldoctor"
+                        path: "/traditionldoctor"
                     });
                     break;
                 case 6:
@@ -334,7 +342,7 @@ export default {
                                 break;
                             case 5:
                                 _this.$router.replace({
-                                    path:"/traditionldoctor"
+                                    path: "/traditionldoctor"
                                 });
                                 break;
                             case 6:

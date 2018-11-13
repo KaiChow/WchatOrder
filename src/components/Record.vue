@@ -1,9 +1,9 @@
 <template>
-<div class="wrapper-record">
+<div class="wrapper-record" >
     <van-notice-bar :scrollable="false" mode="closeable">
         点击列表，可查看个人电子病历详情。
     </van-notice-bar>
-    <div class="record-content" v-if="!miss">
+    <div class="record-content" >
         <div class="register-item" v-for="item in recordList" v-if="!miss" :key="item.NUM">
             <van-cell-group>
                 <van-cell class="record-list" v-bind:title="`编号:${item.BLBH}`" value="内容" v-bind:label="`时间:${item.CJSJ}`" :to="{path:'/recorddetail',query:{'zhid':zhid,'blbh':item.BLBH,'hzbh':item.HZBH}}">

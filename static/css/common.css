@@ -19,7 +19,7 @@
   color: rgb(242, 130, 106) !important;
 }
 
-.wrapper-record .van-cell__value{
+.wrapper-record .van-cell__value {
   flex: none;
 }
 
@@ -68,4 +68,11 @@
 
 .van-radio .van-icon-checked {
   color: #1878c4 !important;
+}
+
+.traditional-doctor-content img.van-card__img {
+  border-radius: 50%;
+  border: 1px solid #eac70a !important;
+  height: 2.133rem !important;
+  width: 2.133rem !important;
 }

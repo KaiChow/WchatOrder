@@ -1,14 +1,17 @@
 <template>
 <div class="wrapper-traditionl-register">
-    <div class="header">
-        <van-card desc="描述信息" title="商品标题" :thumb="imageURL" />
+    <div class="header" v-if="!miss">
+        <div class="doctor">
+            <img :src="imgUrl" alt="" class="doctor-img" >
+            <p class="doctor-name">{{ doctors.YSXM}}</p>
+        </div>
         <van-collapse v-model="activeNames" class="doctor-info">
             <van-collapse-item title="医生简介" name="1" class="doctor-introduct">
-                栗震亚，男，1981年华西医科大学口腔医学院研究生毕业，硕士。国际牙医师学院院士，甘肃省优秀专家。主任医师，教授，兰州大学硕士研究生导师，中华医学会甘肃省分会副会长，中华口腔医学会理事，甘肃省口腔分会主任委员，全国政协委员，甘肃省政协副主席，农工党甘肃省委员会主任委员。历任甘肃省人民医院口腔科主任、副院长等。栗震亚同志曾先后到加拿大、德国、进修，了解世界先进的口腔诊疗技术，提高技术水平,开阔了眼界，开拓了思路，锐意进取，精益求精，不断开展新业务、新技术，使口腔矫形技术跟随世界水平，不断发展。
+                {{ doctors.Introduce }}
             </van-collapse-item>
         </van-collapse>
     </div>
-    <div class="content">
+    <div class="content" v-if="!miss">
         <van-row class="time-row  time-row-strong">
             <van-col span="3" class="time-col">选项</van-col>
             <van-col span="3" class="time-col">周一</van-col>
@@ -38,21 +41,22 @@
                 <van-col span="3" class="time-col time-col-title">21:00-22:00</van-col>
             </van-row>
 
-            <van-row class="time-flex-col" v-for="item in originDetail" :key="item.ID">
-
-                <van-col v-if="val.Reception==0" span="3" class="time-col time-col-relax time-col-item" v-for="val in item.mxList" :key="val.ID">
-                    <!-- <div>休息</div> -->
-                    <div @click="orderAlert(item.Week,val)">预约</div>
-                </van-col>
-                <van-col v-if="val.Reception>0" span="3" class="time-col time-col-order time-col-item" v-for="val in item.mxList" :key="val.ID">
-                    <div @click="orderAlert(item.Week,val)">预约</div>
-                </van-col>
+            <van-row class="time-flex-col" v-for="item in planList" :key="item.ID">
+                <div v-for="val in item.mxList" :key="val.ID">
+                    <div v-if="val.Reception==0">
+                        <van-col span="3" class="time-col time-col-relax time-col-item">
+                            <div>休息</div>
+                        </van-col>
+                    </div>
+                    <div v-if="val.Reception==1">
+                        <van-col span="3" class="time-col time-col-order time-col-item">
+                            <div @click="orderAlert(item.Week,val,item.Days)">预约</div>
+                        </van-col>
+                    </div>
+                </div>
             </van-row>
-
         </div>
-
     </div>
-
 </div>
 </template>
 
@@ -63,28 +67,35 @@ import {
     Dialog,
     Collapse,
     CollapseItem
-} from 'vant';
+} from "vant";
+
 export default {
     components: {},
     props: {},
     data() {
         return {
+            config: {
+                localPictureUrl: "http://172.18.10.189:6688/Picture/",
+                userPictureUrl: "http://114.55.35.180:8085/zsy.zsglrj.cn/Picture/"
+            },
+            doctorImg: localStorage.getItem("doctorImg"),
             zhid: this.$route.query.zhid,
             ysbh: this.$route.query.ysbh,
-            imageURL: "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1541738888&di=2655864645494e3d179b63e680735438&src=http://pic.58pic.com/58pic/15/39/92/15b58PICSAZ_1024.jpg",
-            activeNames: ['1'],
-            planDetail: {
-
-            },
-            originDetail: []
-        }
+            activeNames: ["1"],
+            planDetail: {},
+            miss: true,
+            planList: [],
+            imgUrl: "",
+            originDetail: [],
+            doctors: {}
+        };
     },
     watch: {},
     computed: {},
     methods: {
-        
-        orderAlert(week, item) {
-            debugger;
+        orderAlert(week, item, days) {
+            let _this = this;
+            week = week + "";
             switch (week) {
                 case "1":
                     week = "周一";
@@ -101,7 +112,7 @@ export default {
                 case "5":
                     week = "周五";
                     break;
-                case '6':
+                case "6":
                     week = "周六";
                     break;
                 case "7":
@@ -109,54 +120,65 @@ export default {
                     break;
             }
 
-            let time = `${parseInt(item.TimeLine)}:00-${parseInt(item.TimeLine)+1}:00`;
-           
+            let time = `${parseInt(item.TimeLine)}:00-${parseInt(item.TimeLine) +
+        1}:00`;
+
             Dialog.confirm({
-                title: '微信预约',
-                message: `<p style="text-align:center">确认预约：${week}${time}？</p>`
-            }).then(() => {
-                // on confirm
-            }).catch(() => {
-                // on cancel
-            });
+                    title: "微信预约",
+                    message: `<p style="text-align:center">确认预约：${week}${time}？</p>`
+                })
+                .then(() => {
+                    // on confirm
+                    _this.$router.push({
+                        path: "/register",
+                        query: {
+                            zhid: _this.zhid,
+                            ysbh: _this.ysbh,
+                            type: 2,
+                            week: week,
+                            days: days,
+                            weekdate: item.TimeLine
+                        }
+                    });
+                    _this.$router.go(1);
+                })
+                .catch(() => {
+                    // on cancel
+                });
         },
         getDoctorPlan() {
             let _this = this;
-            _this.$http.get('/api/Register/ZYGPB', {
-                params: {
-                    zhid: _this.zhid,
-                    ysbh: _this.ysbh
-                }
-            }).then(res => {
-                let body = res.data;
-                _this.planDetail = body.Data;
-                for (let i = 0; i < _this.originDetail.length; i++) {
-                    for (let j = 0; j < _this.planDetail.length; j++) {
-                        if (_this.planDetail[j].Week == _this.originDetail[i].Week) {
-                            _this.originDetail[i] = _this.planDetail[j];
-                            _this.originDetail[i].mxList.forEach(value => {
-                                value.tag = "1";
-                            });
-                        } else {
-                            _this.originDetail[i].mxList.forEach(value => {
-                                value.tag = "2";
-                            });
-                        }
+            _this.$http
+                .get("/api/Register/ZYGPB", {
+                    params: {
+                        zhid: _this.zhid,
+                        ysbh: _this.ysbh
                     }
-                }
-                console.log(_this.originDetail);
-            }, err => {
-
-            })
+                })
+                .then(
+                    res => {
+                        let body = res.data;
+                        if (body.Data.PBPlan.length > 0) {
+                            _this.planList = body.Data.PBPlan;
+                        } else {
+                            _this.planList = _this.originDetail; //这是本地模拟的数据结构
+                        }
+                        _this.miss = false;
+                        _this.doctors = body.Data.Doctor[0];
+                    },
+                    err => {
+                        _this.miss = true;
+                    }
+                );
         }
-
     },
     created() {
         this.getDoctorPlan();
         this.originDetail = simulateModelDetail(7, 22);
+        this.imgUrl = `${this.config.userPictureUrl}${this.doctorImg}`;
     },
     mounted() {}
-}
+};
 
 /**
  *
@@ -206,7 +228,10 @@ function weekTimeArr(type, x) {
             weekArr[i] = `${year}-${month + 1}-${i - (7 - dayOfWeeks) + 1}`;
         } else {
             if (i < 7 - dayOfWeeks) {
-                weekArr[i] = `${year}-${month}-${preMonthsDays - (7 - dayOfWeeks) + 1 + i}`;
+                weekArr[i] = `${year}-${month}-${preMonthsDays -
+          (7 - dayOfWeeks) +
+          1 +
+          i}`;
             } else {
                 weekArr[i] = `${year}-${month + 1}-${i - (7 - dayOfWeeks) + 1}`;
             }
@@ -214,7 +239,6 @@ function weekTimeArr(type, x) {
         if (weekArr.length < 28) {
             weekArr.push(obj_arr);
         }
-
     }
     if (type == 1) {
         return weekArr;
@@ -236,16 +260,14 @@ function simulateModelDetail(from, to) {
     var day = date.getDate();
     var w = 0; //第几个星期
     var timer = `${year}-${month}-${day}`;
-
-    good:
-        for (let i = 0; i < dateArr.length; i++) {
-            for (let j = 0; j < dateArr[i].length; j++) {
-                if (dateArr[i][j] == timer) {
-                    w = i;
-                    break good;
-                }
+    good: for (let i = 0; i < dateArr.length; i++) {
+        for (let j = 0; j < dateArr[i].length; j++) {
+            if (dateArr[i][j] == timer) {
+                w = i;
+                break good;
             }
         }
+    }
     var arr = [];
     var Days = "2018-01-01";
 
@@ -256,9 +278,10 @@ function simulateModelDetail(from, to) {
             Days: Days,
             Week: i + "", //星期  星期一为 1 星期二为 2   星期天为 7
             mxList: []
-        }
+        };
         for (let j = from; j < to; j++) {
             var tempObj = {
+                Days: Days,
                 ID: Math.random() * 50000, //模板明细ID 后台自动生成  新增传空 修改必传
                 MBID: "", //模板ID 后台自动生成  新增传空 修改必传
                 TimeLine: j, //时间段   7:00-8:00为 7   8:00-9:00为8  以开始时间为标识
@@ -266,7 +289,7 @@ function simulateModelDetail(from, to) {
                 ReceptionNum: "0", //接诊量
                 Receptioned: "0", //已接诊数量
                 Action: "0" //动作  0新增   1修改  2删除
-            }
+            };
 
             obj.mxList.push(tempObj);
         }
@@ -278,6 +301,7 @@ function simulateModelDetail(from, to) {
 
 <style scoped>
 .content {
+    padding-bottom: 1.25rem;
     box-sizing: border-box;
     border-top: 1px solid #dddddd;
     border-left: 1px solid #dddddd;
@@ -293,6 +317,25 @@ function simulateModelDetail(from, to) {
     color: #000000;
 }
 
+.doctor {
+    text-align: center;
+}
+
+img.doctor-img {
+    margin-top: 5px;
+    border: 1px solid #eac70a;
+    display: inline-block;
+    height: 3.125rem;
+    width: 3.125rem;
+    border-radius: 50%;
+}
+
+p.doctor-name {
+    padding: 5px 0;
+    font-weight: bold;
+    font-size: 16px;
+}
+
 .time-col-relax {
     color: #ffffff;
     cursor: pointer;
@@ -305,10 +348,6 @@ function simulateModelDetail(from, to) {
     background-color: rgb(129, 232, 215);
 }
 
-.time-col-no {
-    /* background-color: rgb(221,221,221); */
-}
-
 .time-row.time-row-strong.van-row {
     font-weight: bold;
 }
@@ -319,11 +358,11 @@ function simulateModelDetail(from, to) {
 }
 
 .doctor-info {
-    margin: .625rem auto;
+    margin: 0.625rem auto;
 }
 
 .doctor-introduct {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .content-time-list {

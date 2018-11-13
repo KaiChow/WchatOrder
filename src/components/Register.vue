@@ -3,7 +3,7 @@
 <div class="register-action">
     <div class="register-content">
         <van-cell-group>
-            <van-field v-model="departmenName" readonly label="科室名称" />
+            <van-field v-model="departmenName" v-if="type==1" readonly label="科室名称" />
             <van-field v-model="doctorName" readonly label="医生名称" />
             <van-field v-model="time" readonly label="就诊日期" />
             <van-field v-model="treatTime" readonly label="就诊时间" />
@@ -51,6 +51,10 @@ export default {
     name: "Register",
     data() {
         return {
+            timeline: this.$route.query.timeline,
+            type: this.$route.query.type,
+            week: this.$route.query.week,
+            weekdate: this.$route.query.weekdate,
             show: false,
             MRGHY: "", //默认挂号员编号
             MRGHYMC: "", //默认挂号员名称
@@ -62,11 +66,11 @@ export default {
             PBID: "",
             openid: localStorage.getItem("openid"),
             showLeft: "true",
-            departmenName: "门诊呼吸内科", //科室名称
-            treatTime: "上午",
-            doctorName: "欧阳锋",
-            time: "2018-08-12", //就诊日期
-            price: 45, //价格
+            departmenName: "", //科室名称
+            treatTime: "",
+            doctorName: "",
+            time: "", //就诊日期
+            price: 0, //价格
             userName: "",
             birthday: "",
             sex: "1", // 0 男 1 女
@@ -79,12 +83,22 @@ export default {
             HZID: "",
             cellPhone: "",
             currentDate: new Date(),
-            minDate: new Date("1900")
+            minDate: new Date("1900"),
+            doctors: {}
         };
     },
     mounted() {
         this.getUserInfo();
-        this.getPBXX();
+        if (this.type == 1) {
+            this.getPBXX();
+        }
+        if (this.type == 2) {
+            this.time = `${this.$route.query.days}(${this.$route.query.week})`;
+            this.treatTime = `${parseInt(this.$route.query.weekdate)}:00-${parseInt(
+        this.$route.query.weekdate
+      ) + 1}:00`;
+            this.getDoctorPlan();
+        }
         this.getPayWay();
     },
 
@@ -110,6 +124,7 @@ export default {
                                 _this.pbInfo = pbArr[i];
                             }
                         }
+
                         _this.departmenName = _this.pbInfo.KSMC;
                         _this.treatTime = _this.pbInfo.AM ? "上午" : "下午";
                         _this.doctorName = _this.pbInfo.YSXM;
@@ -118,6 +133,36 @@ export default {
                     }
                 });
         },
+        /**
+         * 获取医生信息
+         */
+        getDoctorPlan() {
+            let _this = this;
+            _this.$http
+                .get("/api/Register/ZYGPB", {
+                    params: {
+                        zhid: _this.zhid,
+                        ysbh: _this.ysbh
+                    }
+                })
+                .then(
+                    res => {
+                        let body = res.data;
+                        _this.doctors = body.Data.Doctor[0];
+                        _this.doctorName = _this.doctors.YSXM;
+                        _this.price = body.Data.PBPlan[0].Amount;
+                        _this.pbInfo = {
+                            Amount: body.Data.PBPlan[0].Amount,
+                            GHLBBH: body.Data.PBPlan[0].GHLBBH,
+                            GHLBMC: body.Data.PBPlan[0].GHLBMC
+                        };
+                        _this.ysbh = body.Data.PBPlan[0].YSBH;
+                        _this.ksbh = body.Data.PBPlan[0].KSBH;
+                    },
+                    err => {}
+                );
+        },
+
         /**
          * 微信预约，流程说明：
          * 1，线上订单
@@ -132,24 +177,23 @@ export default {
          * 获取或者信息，根据openid和zhid
          */
         getUserInfo() {
-            let _this = this;
-            _this.$http
+            this.$http
                 .get("/api/Register/HZXX", {
                     params: {
-                        openid: _this.openid,
-                        zhid: _this.zhid
+                        openid: this.openid,
+                        zhid: this.zhid
                     }
                 })
                 .then(
                     res => {
                         var res = res.data;
                         if (res.Ret == 0 && res.Data.length > 0) {
-                            _this.userInfo = res.Data[0];
-                            _this.userName = _this.userInfo.XM;
-                            _this.sex = _this.userInfo.XB + "";
+                            this.userInfo = res.Data[0];
+                            this.userName = this.userInfo.XM;
+                            this.sex = this.userInfo.XB + "";
 
-                            if (_this.userInfo.CSRQ) {
-                                _this.birthday = _this.userInfo.CSRQ.split(" ")[0];
+                            if (this.userInfo.CSRQ) {
+                                this.birthday = this.userInfo.CSRQ.split(" ")[0];
                             }
                         } else {
                             console.log("无数据");
@@ -197,15 +241,25 @@ export default {
              * IsSendGHSMS   IsSendNewHZSMS  OpenID   PBID   flag
              * MXList
              */
+            let flag = "";
+
+            if (this.type == 1) {
+                flag = this.pbInfo.AM ? "AM" : "PM"; //上午AM  下午PM
+            } else if (this.type == 2) {
+                flag = this.timeline;
+            }
 
             let Obj = {
+                Condition: {
+                    GHType: this.type, //1 西医版本挂号  2中医版本挂号
+                    OpenID: this.openid,
+                    PBID: this.PBID || this.id,
+                    Flag: flag
+                },
                 OrgID: "0",
-                OpenID: this.openid,
                 HZBH: this.userInfo.HZBH || "0",
                 KSBH: this.ksbh,
                 YSBH: this.ysbh,
-                PBID: this.id,
-                flag: this.pbInfo.AM ? "AM" : "PM", //上午AM  下午PM
                 IsSendGHSMS: 0,
                 isSendNewHZSMS: 0,
                 GHBH: 0,
@@ -337,7 +391,8 @@ export default {
                     PBID: _this.PBID,
                     GHBH: _this.GHBH,
                     access_token: _this.AccessToken,
-                    zhid: _this.zhid
+                    zhid: _this.zhid,
+                    GHType: _this.type
                 })
                 .then(
                     res => {
@@ -349,7 +404,6 @@ export default {
                                 "getBrandWCPayRequest",
                                 dataJson, //接口三获取的josn串填入这个地方
                                 function (res) {
-
                                     if (res.err_msg == "get_brand_wcpay_request:ok") {
                                         //支付成功
                                         _this.$http
@@ -404,17 +458,21 @@ export default {
 
         /* 发送挂号成功信息-------挂号成功后调用 ，发送信息接口*/
         sendRegisterSuccessMessage() {
-            this.$http.get("/api/WeiXin/SendKFMessage", {
-                params: {
-                    openid: this.openid,
-                    access_token: this.AccessToken,
-                    content: `您好，您已成功预约${this.time}${this.treatTime}${this.doctorName}，请及时就诊！`
-                }
-            }).then(res => {
-                window.location.replace(
-                    `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${this.zhid}`
-                );
-            })
+            this.$http
+                .get("/api/WeiXin/SendKFMessage", {
+                    params: {
+                        openid: this.openid,
+                        access_token: this.AccessToken,
+                        content: `您好，您已成功预约${this.time}${this.treatTime}${
+              this.doctorName
+            }，请及时就诊！`
+                    }
+                })
+                .then(res => {
+                    window.location.replace(
+                        `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${this.zhid}`
+                    );
+                });
         },
         showAlert() {
             this.show = true;

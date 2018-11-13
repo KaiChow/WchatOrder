@@ -6,7 +6,7 @@
             <div class="register-item" v-for="item in registerList" v-if="!miss" :key="item.ID">
 
                 <van-cell-group v-if="item.AM">
-                    <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.AMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID}}">
+                    <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.AMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID,'type':1}}">
                         <template>
                             <span class="van-cell-text">费用：￥{{item.Amount}}</span><br>
                             <span class="van-cell-text">剩余号数：{{item.AMMOUNT}}</span>
@@ -14,7 +14,7 @@
                     </van-cell>
                 </van-cell-group>
                 <van-cell-group v-if="item.PM">
-                    <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.PMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID}}">
+                    <van-cell v-bind:title="item.DATE" value="内容" v-bind:label="item.PMTIME" :to="{path:'/register',query:{'zhid':zhid,'ysbh':ysbh,'ksbh':ksbh,'id':item.ID,'type':1}}">
                         <template>
                             <span class="van-cell-text">费用：￥{{item.Amount}}</span><br>
                             <span class="van-cell-text">剩余号数：{{item.PMMOUNT}}</span>
