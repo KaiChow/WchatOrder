@@ -241,8 +241,8 @@ export default {
         let IS_TEST = false;
         if (IS_TEST) {
             _this.page = 5;
-            // _this.zhid = "2017090100000007" || "2018091300000002";
-            _this.zhid = "2018091300000002" || "2018091300000002";
+            _this.zhid = "2017090100000007" || "2018091300000002";
+            // _this.zhid = "2018091300000002" || "2018091300000002";
             localStorage.setItem("zhid", _this.zhid);
             localStorage.setItem("openid", "opvIa1O0eMLUSk3Xe5gRb9TNpGBM");
             switch (_this.page) {

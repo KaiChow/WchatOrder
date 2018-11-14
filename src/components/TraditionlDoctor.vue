@@ -16,7 +16,7 @@
                 </van-card>
             </div>
         </router-link>
-    </div>
+    </div> 
     <div v-if="miss">
         <Miss></Miss>
     </div>

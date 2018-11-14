@@ -469,9 +469,17 @@ export default {
                     }
                 })
                 .then(res => {
-                    window.location.replace(
-                        `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${this.zhid}`
-                    );
+                    if (this.type == 1) {
+                        window.location.replace(
+                            `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${this.zhid}&page=1`
+                        );
+                    }
+                    if (this.type == 2) {
+                        window.location.replace(
+                            `http://zsy.zsglrj.cn/WeiXin/Index.html?ZHID=${this.zhid}&page=5`
+                        );
+                    }
+
                 });
         },
         showAlert() {

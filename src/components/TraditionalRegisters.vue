@@ -157,10 +157,22 @@ export default {
                 })
                 .then(
                     res => {
+                         _this.planList = [];
                         let body = res.data;
-                        if (body.Data.PBPlan.length > 0) {
+                        if (body.Data.PBPlan.length == 7) {
                             _this.planList = body.Data.PBPlan;
+                        } else if (
+                            body.Data.PBPlan.length < 7 &&
+                            body.Data.PBPlan.length > 0
+                        ) {
+                            //处理没有数据的 问题
+                             _this.planList = body.Data.PBPlan;
+                            let hasWeeksFirst = _this.planList[0].Week;
+                            for (let j = 0; j < hasWeeksFirst-1; j++) {
+                                _this.planList.unshift(_this.originDetail[j]);
+                            }
                         } else {
+                            _this.planList = [];
                             _this.planList = _this.originDetail; //这是本地模拟的数据结构
                         }
                         _this.miss = false;
